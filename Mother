@@ -1,0 +1,235 @@
+class Automobile(object):
+    'Automobile class. Only way to initialize values is through the constructor'
+    def __init__(self,make='Unknown', model='Unknown',year='1900',color='Unknown'):
+        'Constructor'
+        self.make=make
+        self.color=color
+        self.year=year
+        self.model=model
+
+    def getMake(self):
+        'Get the Make of the Car'
+        return self.make
+
+    def getColor(self):
+        'Get the color of the car'
+        return self.color
+
+    def getYear(self):
+        'Get the year of the car'
+        return self.year
+
+    def getModel(self):
+        'get the model of the car'
+        return self.model
+
+    def __str__(self):
+        'get the string representation of the automobile'
+        return 'A {}, {}, {} model year {}'.format(self.color,self.make,self.model,self.year)
+
+class AutomobileInventoryManager(object):
+    'Class to manage adding / removing inventory from the inventory file'
+
+    def __init__(self, filename='inventory.txt'):
+        'Initialize the Inventory Manager'
+        self.filename=filename
+        self.inventory=[]
+    
+    def loadInventory(self):
+        'load cars from the inventory file'
+        try:
+            self.inventory.clear()
+            infile = open(self.filename,'r')
+            lines = infile.readlines()
+            for line in lines:
+                temp= line.split(',')
+                self.inventory.append(Automobile(temp[0].strip(),temp[1].strip(),temp[2].strip(),temp[3].strip()))
+            infile.close()
+            return True
+        except:
+            return False
+
+    def saveInventory(self):
+        'save the inventory to the file and overwrite the old data.'
+        try:
+            outfile = open(self.filename,'w')
+            for auto in self.inventory:
+                outfile.write('{},{},{},{}\n'.format(auto.getMake(),auto.getModel(),auto.getYear(),auto.getColor()))
+            outfile.close()
+            return True
+        except:
+            return False
+
+    def getItem(self,index):
+        'get an automobile from inventory'
+        if index>=0 and index<len(self.inventory):
+            return self.inventory[index]
+        else:
+            return None
+
+    def addInventory(self, auto):
+        'add a new auto to inventory'
+        self.inventory.append(auto)
+
+    def removeInventory(self, index):
+        'remove inventory from the internal collection'
+        if index>=0 and index<len(self.inventory):
+           self.inventory.pop(index)
+           return True
+        else:
+           return False
+
+    def getInventoryCount(self):
+        'get the count of cars in inventory'
+        return len(self.inventory)
+
+    def __contains__(self, make):
+        'true to if a make of car in inventory'
+        for auto in self.inventory:
+            if auto.getMake()==make:
+                return True
+        return False
+
+    def __iter__(self):
+        'get an iterator to loop through the automobile objects'
+        return iter(self.inventory)
+
+    def __str__(self):
+        'string represention of the inventory'
+        return 'There are {} automobiles in inventory'.format(self.getInventoryCount())
+
+from tkinter import Label, Tk, Entry, Button, END
+from tkinter.messagebox import showinfo
+'This Gui is choosen for the index of prototype website '
+class AIMGUI(Tk):
+    'Inventory Manager GUI'
+    
+    def __init__(self,im,parent=None):
+        'constructor'
+        Tk.__init__(self, parent)
+        self.im = im
+        self.im.loadInventory()
+        self.index=1
+        self.title('Dewey, Cheatem & Howe Motors Inventory')
+        self.make_widgets()
+        self.updateUI()
+
+    def updateUI(self):
+        'updates modt UI elements after interaction with the GUI'
+        self.lblPosition.config(text='Viewing automobile {} of {}'.format(self.index, self.im.getInventoryCount()))
+        auto=self.im.getItem(self.index-1)
+        if auto!= None:
+            self.lblAutoInfo.config(text='{}'.format(str(auto)))
+        else:
+            self.lblAutoInfo.config(text='')
+            showinfo(title='Inventory',message="No car at this index")
+                                    
+    def previous(self):
+        'View the previous car in inventory'
+        if self.index >1:
+            self.index=self.index-1
+        else:
+            showinfo(title='Inventory',message="You are at the beginning of the list")
+            self.index=1
+        self.updateUI()
+            
+
+    def next(self):
+        'view the next car in inventory'
+        if self.index < self.im.getInventoryCount():
+            self.index=self.index+1
+        else:
+            showinfo(title='Inventory',message="You are at the end of the list")
+            self.index=self.im.getInventoryCount()
+        self.updateUI()
+
+    def remove(self):
+        'remove a car from inventory'
+        if self.im.removeInventory(self.index-1) ==True:
+            showinfo(title='Inventory',message="Car removed. Moving to the front of the list.")
+            self.index=1
+        else:
+           showinfo(title='Inventory',message="Car not removed.")
+        self.updateUI()
+
+    def addCar(self):
+        'add a automobile to inventory'
+        if self.makeEntry.get()=='':
+            showinfo(title='Manager',message="Make Required.")
+            return
+        else:
+            make=self.modelEntry.get()
+            
+        if self.modelEntry.get()=='':
+            showinfo(title='Manager',message="Model Required.")
+            return
+        else:
+            model=self.makeEntry.get()
+            
+        if self.yearEntry.get()=='':
+            showinfo(title='Manager',message="Year Required.")
+            return
+        else:
+            year=self.yearEntry.get()
+            
+        if self.colorEntry.get()=='':
+            showinfo(title='Manager',message="Color Required.")
+            return
+        else:
+            color=self.colorEntry.get()
+
+        a=Automobile(make,model,year,color)
+        self.im.addInventory(a)
+        self.updateUI()
+
+        self.yearEntry.delete(0,END)
+        self.makeEntry.delete(0,END)
+        self.modelEntry.delete(0,END)
+        self.colorEntry.delete(0,END)
+
+    def saveFile(self):
+        'save inventory to the file'
+        if(self.im.saveInventory()):
+            showinfo(title='Manager',message="Inventory Saved.")
+        else:
+            showinfo(title='Manager',message="Inventory Save Failed.")
+    
+    def make_widgets(self):
+        'add widgets to the UI'
+        Label(self,text='Dewey, Cheatem & Howe Motors Inventory').grid(row=0,column=0,columnspan=4)
+        self.lblPosition = Label(self,text='')
+        self.lblPosition.grid(row=1,column=0, columnspan=4)
+
+        self.btnPrevious = Button(self,text='< Previous',command=lambda:self.previous())
+        self.btnPrevious.grid(row=2,column=0)
+        self.lblAutoInfo = Label(self,text='')
+        self.lblAutoInfo.grid(row=2,column=1)
+        self.btnNext = Button(self,text='Next >',command=lambda:self.next())
+        self.btnNext.grid(row=2,column=2)
+        self.btnRemove = Button(self,text='REMOVE',command=lambda:self.remove())
+        self.btnRemove.grid(row=2,column=3)
+
+        Label(self,text='Make:').grid(row=3,column=0)
+        self.makeEntry = Entry()
+        self.makeEntry.grid(row=3,column=1)
+
+        Label(self,text='Model:').grid(row=4,column=0)
+        self.modelEntry = Entry()
+        self.modelEntry.grid(row=4,column=1)
+
+        Label(self,text='Year:').grid(row=5,column=0)
+        self.yearEntry = Entry()
+        self.yearEntry.grid(row=5,column=1)
+
+        Label(self,text='Color:').grid(row=6,column=0)
+        self.colorEntry = Entry()
+        self.colorEntry.grid(row=6,column=1)
+        
+        Button(self,text='Add New Car', command=lambda:self.addCar()).grid(row=7,column=0)
+        Button(self,text='Save to File', command=lambda:self.saveFile()).grid(row=8,column=0)
+        
+        
+a=AutomobileInventoryManager()
+AIMGUI(a).mainloop()
+                               
+
