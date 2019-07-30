@@ -21,7 +21,7 @@ class Employee_Roster_App(object):
             return False
 
     def saveRoster(self):
-        'save the inventory to the file and overwrite the old data.'
+        'save the roster to the file and overwrite the old data.'
         try:
             outfile = open(self.filename,'w')
             for auto in self.inventory:
