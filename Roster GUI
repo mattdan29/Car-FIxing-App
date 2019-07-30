@@ -1,0 +1,197 @@
+class Employee_Roster_App(object):
+    'Class to manage adding / removing roster from the roster file'
+
+    def __init__(self, filename='Roster.txt'):
+        'Initialize the roster Manager'
+        self.filename=filename
+        self.employees=[]
+    
+    def loadRoster(self):
+        'load employees from the inventory file'
+        try:
+            self.employees.clear()
+            infile = open(self.filename,'r')
+            lines = infile.readlines()
+            for line in lines:
+                temp= line.split(',')
+                self.employees.append(Employees(temp[0].strip(),temp[1].strip(),temp[2].strip(),temp[3].strip()))
+            infile.close()
+            return True
+        except:
+            return False
+
+    def saveRoster(self):
+        'save the inventory to the file and overwrite the old data.'
+        try:
+            outfile = open(self.filename,'w')
+            for auto in self.inventory:
+                outfile.write('{},{},{},{}\n'.format(auto.getMake(),auto.getModel(),auto.getYear(),auto.getColor()))
+            outfile.close()
+            return True
+        except:
+            return False
+
+    def getEmployee(self,index):
+        'get an employee from roster'
+        if index>=0 and index<len(self.employees):
+            return self.employees[index]
+        else:
+            return None
+
+    def name_adder(self, employee):
+        'add a new employee to roster'
+        self.employees.append(employee)
+
+    def deleter(self, index):
+        'remove employee from the internal collection'
+        if index>=0 and index<len(self.inventory):
+           self.inventory.pop(index)
+           return True
+        else:
+           return False
+
+    def getEmployeesCount(self):
+        'get the count of cars in roster'
+        return len(self.employees)
+
+    def __contains__(self, pay):
+        'true to if a make of car in roster'
+        for money in self.employees:
+            if employees.getPay()==pay:
+                return True
+        return False
+
+    def __iter__(self):
+        'get an iterator to loop through the Employee objects'
+        return iter(self.employees)
+
+    def __str__(self):
+        'string represention of the inventory'
+        return 'There are {} Employess on Call'.format(self.getEmployeesCount())
+
+from tkinter import Label, Tk, Entry, Button, END
+from tkinter.messagebox import showinfo
+'This Gui is choosen for the index of prototype website '
+class AIMGUI(Tk):
+    'Roster Manager GUI'
+    
+    def __init__(self,im,parent=None):
+        'constructor'
+        Tk.__init__(self, parent)
+        self.im = im
+        self.im.loadroster()
+        self.index=1
+        self.title('Employee roster')
+        self.make_widgets()
+        self.updateUI()
+
+    def updateUI(self):
+        'updates modt UI elements after interaction with the GUI'
+        self.lblPosition.config(text='Viewing roster {} of {}'.format(self.index, self.im.getInventoryCount()))
+        auto=self.im.getItem(self.index-1)
+        if auto!= None:
+            self.lblAutoInfo.config(text='{}'.format(str(employees)))
+        else:
+            self.lblAutoInfo.config(text='')
+            showinfo(title='Roster',message="No Employees on Roster")
+                                    
+    def previous(self):
+        'View the previous Employee in Roster'
+        if self.index >1:
+            self.index=self.index-1
+        else:
+            showinfo(title='Roster',message="You are at the beginning of the list")
+            self.index=1
+        self.updateUI()
+            
+
+    def next(self):
+        'view the next Employee in roster'
+        if self.index < self.im.getEmployeeCount():
+            self.index=self.index+1
+        else:
+            showinfo(title='Roster',message="You are at the end of the list")
+            self.index=self.im.getEmployeeCount()
+        self.updateUI()
+
+    def remove(self):
+        'remove a Employee from roster'
+        if self.im.deleter(self.index-1) ==True:
+            showinfo(title='Roster',message="Employee removed. Moving to the front of the roster.")
+            self.index=1
+        else:
+           showinfo(title='Inventory',message="Employee not removed.")
+        self.updateUI()
+
+    def name_adder(self):
+        'add a Employee to roster'
+        if self.makeEntry.get()=='':
+            showinfo(title='Manager',message="Make Required.")
+            return
+        else:
+            make=self.first.get()
+            
+        if self.last.get()=='':
+            showinfo(title='Manager',message="Last name Required.")
+            return
+        else:
+            model=self.pay.get()
+            
+        if self.pay.get()=='':
+            showinfo(title='Manager',message="pay Required.")
+            return
+
+        a=Employee(first,last,pay)
+        self.im.name_adder(a)
+        self.updateUI()
+
+        self.firstEntry.delete(0,END)
+        self.lastEntry.delete(0,END)
+        self.payEntry.delete(0,END)
+        self.emailEntry.delete(0,END)
+
+    def saveFile(self):
+        'save roster to the file'
+        if(self.im.saveEmployee()):
+            showinfo(title='Manager',message="Roster Saved.")
+        else:
+            showinfo(title='Manager',message="Roster Save Failed.")
+    
+    def make_widgets(self):
+        'add widgets to the UI'
+        Label(self,text='The Best Auto Shop on earth').grid(row=0,column=0,columnspan=4)
+        self.lblPosition = Label(self,text='')
+        self.lblPosition.grid(row=1,column=0, columnspan=4)
+
+        self.btnPrevious = Button(self,text='< Previous',command=lambda:self.previous())
+        self.btnPrevious.grid(row=2,column=0)
+        self.lblAutoInfo = Label(self,text='')
+        self.lblAutoInfo.grid(row=2,column=1)
+        self.btnNext = Button(self,text='Next >',command=lambda:self.next())
+        self.btnNext.grid(row=2,column=2)
+        self.btnRemove = Button(self,text='REMOVE',command=lambda:self.remove())
+        self.btnRemove.grid(row=2,column=3)
+
+        Label(self,text='first:').grid(row=3,column=0)
+        self.makeEntry = Entry()
+        self.makeEntry.grid(row=3,column=1)
+
+        Label(self,text='last:').grid(row=4,column=0)
+        self.modelEntry = Entry()
+        self.modelEntry.grid(row=4,column=1)
+
+        Label(self,text='pay:').grid(row=5,column=0)
+        self.yearEntry = Entry()
+        self.yearEntry.grid(row=5,column=1)
+
+        Label(self,text='email:').grid(row=6,column=0)
+        self.colorEntry = Entry()
+        self.colorEntry.grid(row=6,column=1)
+        
+        Button(self,text='Add New Employee', command=lambda:self.addCar()).grid(row=7,column=0)
+        Button(self,text='Save to File', command=lambda:self.saveFile()).grid(row=8,column=0)
+        
+        
+a=Employee_Roster_App()
+AIMGUI(a).mainloop()
+                        
