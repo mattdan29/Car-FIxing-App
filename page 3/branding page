@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Python Methods and Class work</title>
+	<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+	<h1> 
+		<em>Matthew Daniels Web Site</em>
+		<header>
+			<nav>
+				<ul>
+					<li><a href="index.html">Home</li>
+					<li><a href="page 2.html">Resume</li>
+					<li><a href="page 3.html">Python Methods</li>
+					<li><a href="page 4.html">Java Methods</li>
+				</ul>
+			</nav>
+		</header>
+		<a href="https://d2l.depaul.edu/d2l/le/content/627077/viewContent/4725318/View">DePaul 241 and 242 Course</a>
+	<h1>
+
+</body>
+</html>
