@@ -1,0 +1,51 @@
+#to import the envierment verablies 
+import os
+# lib for emails casses
+import smtplib
+#for picking more then one pic
+import imghdr
+
+
+#grabing the Emailmessage class
+import email.message import EmailMessage
+
+
+
+Email_Adress = os.environ.get('Clint_Address')
+
+Email_PassWord = os.environ.get('Clint_Paa')
+#clint code contact list 
+for line in open('Clint_file_given.txt'):
+    #print('line', end=' ')
+    contacts = line
+
+msg = EmailMessage()
+
+msg['Subject'] = 'look at promo'
+
+msg['From'] = Email_Address
+#passing the clint code list as a object (in the ADP for import ', '.join(contacts) also worked
+msg['To'] = contacts
+
+msg.set_content ('look at the deal my guy')
+
+#making and object that hows all img clint want they only can get 4 img
+files = ['file_pathname1','file_pathname2', 'file_pathname3', 'file_pathname4']
+for file in files:
+    #open a file with its path name
+    with open('file', 'rb') as f:
+        file_data = f.read()
+        
+        file_type = imghdr.what(f.name)
+        
+        file_name = f.name
+
+        #print(file_type)
+    msg.add_attachement(file_data, maintype= 'image', subtype='file_type', filename= file_name)
+
+#SMTP_SSL class makes sure i'm encripted for the gmail conection 
+with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    #we can put in our email and pass word as args
+   smtp.login(Email_Adress, Email_Pass)
+    # pass the msg object 
+   smtp.send_message(msg)
