@@ -1,0 +1,30 @@
+#to import the envierment verablies 
+import os
+# lib for emails casses
+import smtplib
+#grabing the Emailmessage class
+import email.message import EmailMessage
+
+
+
+Email_Adress = os.environ.get('Email_User')
+
+Email_Adress = os.environ.get('Email_Pass')
+
+msg = EmailMessage()
+
+msg['Subject'] = 'Grab Dinner?'
+
+msg['From'] = Email_Address
+
+msg['To'] = 'Clint list'
+
+msg.set_content ('How about dinner??')
+
+
+#SMTP_SSL class makes sure i'm encripted for the gmail conection 
+with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    #we can put in our email and pass word as args
+   smtp.login(Email_Adress, Email_Pass)
+    # pass the msg object 
+   smtp.send_message(msg)
